@@ -3,10 +3,12 @@ from flask.ext.bootstrap import Bootstrap
 from flask.ext.sqlalchemy import SQLAlchemy
 from config import config, basedir
 from flask.ext.login import LoginManager
+from flask.ext.socketio import SocketIO
 import os
 
 bootstrap = Bootstrap()
 db = SQLAlchemy()
+socketio = SocketIO()
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
 
@@ -29,5 +31,7 @@ def create_app(config_name):
         with app.app_context():
             db.create_all()
             db.session.commit()
+
+    socketio.init_app(app)
 
     return app
