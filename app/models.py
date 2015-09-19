@@ -27,3 +27,16 @@ class User(db.Model, UserMixin):
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+class Room(db.Model):
+    __tablename__ = 'rooms'
+    id = db.Column(db.Integer, primary_key = True)
+    name = db.Column(db.String(32), unique=True, index=True)
+    description = db.Column(db.Text(300), index=True)
+
+    def __init__(self, name, description):
+        self.name = name
+        self.description= description
+
+    def __unicode__(self):
+        return self.name

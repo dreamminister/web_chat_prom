@@ -4,4 +4,4 @@ from app import create_app, socketio
 app = create_app('default')
 
 if __name__ == '__main__':
-    socketio.run(app, host='192.168.1.3')
+    socketio.run(app, host='192.168.1.5') #host='192.168.1.3'

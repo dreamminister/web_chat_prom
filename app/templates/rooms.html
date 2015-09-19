@@ -7,11 +7,18 @@
             <ul>
             {% for room in rooms %}
                 <li>
-                    <a href="{{ url_for('main.custom_chat', room=room) }}">{{ room }}</a>
+                    <p>
+                        <a href="{{ url_for('main.custom_chat', room=room.name) }}">{{ room }}</a>
+                        | {{ room.description }}
+                    </p>
                 </li>
             {% endfor %}
             </ul>
         {% endif %}
+
+        <div>
+        <a href="{{ url_for('main.add_room') }}">Add new chat room</a>
+        </div>
 
     {% else %}
         Dear Guest, please log in to see available rooms!

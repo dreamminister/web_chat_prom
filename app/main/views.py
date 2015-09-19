@@ -1,6 +1,9 @@
-from flask import session, redirect, url_for, render_template, request
+from flask import session, redirect, url_for, render_template
 from flask.ext.login import current_user
 from . import main
+from ..models import Room
+from .forms import AddRoomForm
+from app import db
 
 @main.route('/')
 def index():
@@ -8,9 +11,9 @@ def index():
 
 @main.route('/rooms')
 def rooms():
-    rooms = ['main_room']
+    rooms = [Room('Main', 'General room for all users.')]
     if current_user.is_authenticated():
-        rooms.append('new_room')
+        rooms.extend(Room.query.all())
     return render_template('rooms.html', rooms=rooms)
 
 @main.route('/chat')
@@ -38,3 +41,18 @@ def custom_chat(room):
     if name == '' or room == '':
         return redirect(url_for('.index'))
     return render_template('chat.html', name=name, room=room)
+
+@main.route('/chat/add', methods=['GET', 'POST'])
+def add_room():
+    error = ''
+    if current_user.is_authenticated():
+        form = AddRoomForm()
+        if form.validate_on_submit():
+            room = Room(name=form.name.data, description=form.description.data)
+            db.session.add(room)
+            db.session.commit()
+            return redirect(url_for('main.rooms'))
+        else:
+            return render_template('add_room.html', form=form, error=error)
+    else:
+        return redirect(url_for('auth.login'))
