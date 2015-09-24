@@ -30,6 +30,7 @@ def load_user(user_id):
 
 class Room(db.Model):
     __tablename__ = 'rooms'
+    __searchable__ = ['name', 'description']
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(32), unique=True, index=True)
     description = db.Column(db.Text(300), index=True)

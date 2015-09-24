@@ -7,6 +7,8 @@ class Config:
     DATABASE_NAME = 'data-dev.sqlite'
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
     'sqlite:///' + os.path.join(basedir, DATABASE_NAME)
+    SEARCHBASE_NAME = 'dev-search'
+    WHOOSH_BASE = os.path.join(basedir, SEARCHBASE_NAME)
 
     @staticmethod
     def init_app(app):

@@ -20,6 +20,15 @@
                  <li><a href="/">Home</a></li>
                  {% if current_user.is_authenticated() %}
                  <li><a href="{{ url_for('main.rooms') }}">Rooms</a></li>
+                 <li>
+                    <p>
+                        <form class="navbar-search" action="{{ url_for('main.room_search') }}" method="post">
+                            <input class="input-medium search-query" type="text" name="search_query" size="10" />
+                            <input style="padding: 2px 5px" class="btn btn-mini btn-primary" type="submit" value="Search" />
+                        </form>
+                    </p>
+
+                </li>
                  {% endif %}
              </ul>
 
