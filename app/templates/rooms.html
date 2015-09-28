@@ -5,6 +5,7 @@
         Available chat rooms:
         {% if rooms %}
             <ul>
+            <br/>
             {% for room in rooms %}
                 <li>
                     <p>
@@ -17,7 +18,7 @@
         {% endif %}
 
         <div>
-        <a href="{{ url_for('main.add_room') }}">Add new chat room</a>
+        <a class="btn btn-mini btn-primary" href="{{ url_for('main.add_room') }}">Add new</a>
         </div>
 
     {% else %}

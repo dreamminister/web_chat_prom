@@ -1,10 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %}Flask-SocketIO-Chat: {{ room }}{% endblock %}
+{% block title %}Web-Chat room: {{ room }}{% endblock %}
 
 {% block head %}
   {{ super() }}
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"/>
     <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="https://cdn.firebase.com/js/client/1.1.0/firebase.js"></script>
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
         <script type="text/javascript" charset="utf-8">
             var socket;
@@ -13,20 +15,61 @@
                 socket.on('connect', function() {
                     socket.emit('joined', {});
                 });
+                var chat_tag = $('#chat');
+                var text_tag = $('#text');
+                function processSendMsg() {
+                        text = text_tag.val();
+                        text_tag.val('');
+                        socket.emit('text', {msg: text});
+                }
+                function updateChatText(data) {
+                    chat_tag.append(data.msg);
+                    chat_tag.scrollTop(chat_tag[0].scrollHeight);
+                }
+                function formatMsg(msg){
+                    return "<p>" + msg + "</p>";
+                }
+
+                function postNews() {
+                   var ref = new Firebase("https://hacker-news.firebaseio.com/v0/");
+                    var itemRef;
+                    ref.child('newstories').child(0).on('value', function (snapshot) {
+                        if (itemRef) {
+                            itemRef.off();
+                        }
+                        //Get the ID of the top article
+                        var id = snapshot.val();
+
+                        //Get the article details and update in realtime
+                        itemRef = ref.child('item').child(id);
+                        itemRef.on('value', function (snapshot) {
+                            var item = snapshot.val();
+                            var title = item.title;
+                            var href = item.url;
+                            var result = "<a href="+ href + " target='_blank'>" + title + "</a>";
+                            chat_tag.append(formatMsg(result));
+                            socket.send('text', {msg: result}, namespace='/chat');
+                        });
+                    });
+                }
+
+                postNews();
+
                 socket.on('status', function(data) {
-                    $('#chat').val($('#chat').val() + '<' + data.msg + '>\n');
-                    $('#chat').scrollTop($('#chat')[0].scrollHeight);
+                    chat_tag.append(formatMsg(data.msg));
+                    chat_tag.scrollTop(chat_tag[0].scrollHeight);
                 });
                 socket.on('message', function(data) {
-                    $('#chat').val($('#chat').val() + data.msg + '\n');
-                    $('#chat').scrollTop($('#chat')[0].scrollHeight);
+                    chat_tag.append(formatMsg(data.msg));
+                    chat_tag.scrollTop(chat_tag[0].scrollHeight);
                 });
-                $('#text').keypress(function(e) {
+
+                $('#text_btn').click(processSendMsg);
+
+                text_tag.keypress(function(e) {
                     var code = e.keyCode || e.which;
                     if (code == 13) {
-                        text = $('#text').val();
-                        $('#text').val('');
-                        socket.emit('text', {msg: text});
+                        processSendMsg()
                     }
                 });
             });
@@ -34,8 +77,14 @@
 {% endblock %}
 
 {% block page_content %}
-    <h1>Flask-SocketIO-Chat: {{ room }}</h1>
-    <textarea id="chat" cols="80" rows="20"></textarea><br><br>
-    <input id="text" size="80" placeholder="Enter your message here"><br><br>
-    <a href="{{ url_for('main.index') }}" onclick="socket.emit('left', {});">Leave this room</a>
+    <h1>Room: {{ room }}</h1>
+    <div id="chat" >
+
+    </div><br><br>
+    <span>
+        <input id="text" size="65" placeholder="Enter your message here">
+        <div id="text_btn" style="margin-left: 2em; padding: 2px 1em 2px 1em" class="btn btn-mini btn-primary">Send</div>
+    </span>
+    <br><br><br>
+    <a href="{{ url_for('main.index') }}" class="btn btn-mini btn-primary" onclick="socket.emit('left', {});">Leave this room</a>
 {% endblock %}
