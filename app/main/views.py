@@ -1,7 +1,7 @@
 from flask import session, redirect, url_for, render_template, request
 from flask.ext.login import current_user
 from . import main
-from ..models import Room
+from ..models import Room, Message
 from .forms import AddRoomForm
 from app import db
 import string
@@ -48,7 +48,10 @@ def custom_chat(room):
     session['room'] = room
     if name == '' or room == '':
         return redirect(url_for('.index'))
-    return render_template('chat.html', name=name, room=room)
+
+    history = Message.query.filter_by(room=room).limit(20).all()
+
+    return render_template('chat.html', name=name, room=room, history=history)
 
 @main.route('/chat/add', methods=['GET', 'POST'])
 def add_room():

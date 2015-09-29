@@ -22,11 +22,13 @@
                         text_tag.val('');
                         socket.emit('text', {msg: text});
                 }
-                function updateChatText(data) {
-                    chat_tag.append(data.msg);
-                    chat_tag.scrollTop(chat_tag[0].scrollHeight);
-                }
                 function formatMsg(msg){
+                    return "<p>" + msg + "</p>";
+                }
+
+                function advancedFormatMsg(msg){
+                    msg = msg.replace("<","&lt;");
+                    msg = msg.replace(">","&gt;");
                     return "<p>" + msg + "</p>";
                 }
 
@@ -47,20 +49,28 @@
                             var title = item.title;
                             var href = item.url;
                             var result = "<a href="+ href + " target='_blank'>" + title + "</a>";
-                            chat_tag.append(formatMsg(result));
-                            socket.send('text', {msg: result}, namespace='/chat');
+                            // chat_tag.append(formatMsg(result));
+                            // chat_tag.scrollTop(chat_tag[0].scrollHeight);
+                            socket.emit('news', {msg: result});
                         });
                     });
                 }
 
-                postNews();
+                setTimeout(postNews, 5000);
 
                 socket.on('status', function(data) {
-                    chat_tag.append(formatMsg(data.msg));
+                    chat_tag.append(advancedFormatMsg(data.msg));
                     chat_tag.scrollTop(chat_tag[0].scrollHeight);
                 });
                 socket.on('message', function(data) {
-                    chat_tag.append(formatMsg(data.msg));
+                    if (data.name === 'News')
+                    {
+                        chat_tag.append(formatMsg(data.msg));
+                    }
+                    else
+                    {
+                        chat_tag.append(advancedFormatMsg(data.msg));
+                    }
                     chat_tag.scrollTop(chat_tag[0].scrollHeight);
                 });
 
@@ -79,7 +89,11 @@
 {% block page_content %}
     <h1>Room: {{ room }}</h1>
     <div id="chat" >
-
+    {% if history %}
+        {% for msg in history %}
+          <p> [{{ msg.created }}] {{ msg.text }} </p>
+        {% endfor %}
+    {% endif %}
     </div><br><br>
     <span>
         <input id="text" size="65" placeholder="Enter your message here">

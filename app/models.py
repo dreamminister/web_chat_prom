@@ -1,6 +1,7 @@
 from flask.ext.login import UserMixin
 from app import db, login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
 
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
@@ -41,3 +42,18 @@ class Room(db.Model):
 
     def __unicode__(self):
         return self.name
+
+
+class Message(db.Model):
+    __tablename_ = 'messages'
+    id = db.Column(db.Integer, primary_key = True)
+    created = db.Column(db.DateTime, default=datetime.utcnow())
+    text = db.Column(db.Text, index=True)
+    room = db.Column(db.String(32))
+    user = db.Column(db.String(64))
+
+    def __init__(self, text, room, user, date):
+        self.text = text
+        self.room = room
+        self.user = user
+        self.created = date
