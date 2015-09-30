@@ -1,4 +1,4 @@
-from flask import session, redirect, url_for, render_template, request
+from flask import session, redirect, url_for, render_template, request, jsonify, Response
 from flask.ext.login import current_user
 from . import main
 from ..models import Room, Message
@@ -95,3 +95,30 @@ def room_search():
         return render_template('room_search.html',
                                rooms=rooms, sq=search_query)
     return render_template('room_search.html', error=error)
+
+@main.route('/_history_search')
+def history_search():
+    query = request.args.get('query')
+    if not query:
+        return jsonify(error="Something went wrong...")
+
+    valid_sq = " ".join([elem.strip(string.punctuation) for elem in query.split(' ')[:10]]).strip(' ')
+    msg_search_and = Message.query.whoosh_search(valid_sq).all()
+    msg_search_or = Message.query.whoosh_search(valid_sq, or_=True).all()
+
+    messages = []
+
+    messages.extend(msg_search_and)
+    for msg in msg_search_or:
+        if msg not in messages:
+            messages.append(msg)
+
+    data = []
+
+    for msg in messages:
+        data.append({"msg": msg.user + ": " + msg.text})
+
+    if len(data) == 0:
+        return jsonify(error="No results...")
+
+    return jsonify(result=data[:20])

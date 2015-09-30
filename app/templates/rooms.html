@@ -16,11 +16,10 @@
             {% endfor %}
             </ul>
         {% endif %}
-
-        <div>
+        <span>
         <a class="btn btn-mini btn-primary" href="{{ url_for('main.add_room') }}">Add new</a>
-        </div>
 
+        </span>
     {% else %}
         Dear Guest, please log in to see available rooms!
     {% endif %}

@@ -21,8 +21,9 @@ def send(message):
     The message is sent to all people in the room."""
     room = session.get('room')
     user_name = session.get('name')
-    msg = CreateAddMessage(message['msg'], room, user_name)
-    emit('message', {'msg': msg}, room=room)
+    if len(message['msg']) > 0:
+        msg = CreateAddMessage(message['msg'], room, user_name)
+        emit('message', {'msg': msg}, room=room)
 
 @socketio.on('news', namespace='/chat')
 def send_news(message):

@@ -5,18 +5,19 @@
 {% block head %}
   {{ super() }}
     <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"/>
-    <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
-    <script type="text/javascript" src="https://cdn.firebase.com/js/client/1.1.0/firebase.js"></script>
-        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='jquery-1.4.2.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='firebase.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='socket.io.min.js') }}"></script>
         <script type="text/javascript" charset="utf-8">
             var socket;
             $(document).ready(function(){
                 socket = io.connect('http://' + document.domain + ':' + location.port + '/chat');
-                socket.on('connect', function() {
-                    socket.emit('joined', {});
-                });
+
                 var chat_tag = $('#chat');
                 var text_tag = $('#text');
+                var history_tag = $('#history_btn');
+                var results_tag = $("#results");
+
                 function processSendMsg() {
                         text = text_tag.val();
                         text_tag.val('');
@@ -25,7 +26,9 @@
                 function formatMsg(msg){
                     return "<p>" + msg + "</p>";
                 }
-
+                function formatlistMsg(msg){
+                    return "<li>" + msg + "</li>";
+                }
                 function advancedFormatMsg(msg){
                     msg = msg.replace("<","&lt;");
                     msg = msg.replace(">","&gt;");
@@ -49,8 +52,7 @@
                             var title = item.title;
                             var href = item.url;
                             var result = "<a href="+ href + " target='_blank'>" + title + "</a>";
-                            // chat_tag.append(formatMsg(result));
-                            // chat_tag.scrollTop(chat_tag[0].scrollHeight);
+
                             socket.emit('news', {msg: result});
                         });
                     });
@@ -58,6 +60,9 @@
 
                 setTimeout(postNews, 5000);
 
+                socket.on('connect', function() {
+                    socket.emit('joined', {});
+                });
                 socket.on('status', function(data) {
                     chat_tag.append(advancedFormatMsg(data.msg));
                     chat_tag.scrollTop(chat_tag[0].scrollHeight);
@@ -82,6 +87,39 @@
                         processSendMsg()
                     }
                 });
+
+                $('#clear_btn').click(function(){
+                    results_tag.html('');
+                });
+
+                history_tag.click(function(){
+                    text = text_tag.val();
+                    text_tag.val('');
+                    if (text.length > 0){
+                        $.ajax({
+                            url: '/_history_search',
+                            data: {
+                                query: text
+                            },
+                            success: function(data){
+                                var i = 0;
+
+                                if (data.error != undefined)
+                                    results_tag.html(formatMsg(data.error));
+                                else {
+                                    results_tag.html('');
+                                    for (item in data.result) {
+                                        results_tag.append(formatlistMsg(data.result[item].msg));
+                                    }
+                                }
+                            }
+                        });
+                    }
+                    else
+                    {
+                        alert("Enter at least something in message box...");
+                    }
+                });
             });
         </script>
 {% endblock %}
@@ -91,7 +129,7 @@
     <div id="chat" >
     {% if history %}
         {% for msg in history %}
-          <p> [{{ msg.created }}] {{ msg.text }} </p>
+          <p> {{ msg.text }} </p>
         {% endfor %}
     {% endif %}
     </div><br><br>
@@ -100,5 +138,12 @@
         <div id="text_btn" style="margin-left: 2em; padding: 2px 1em 2px 1em" class="btn btn-mini btn-primary">Send</div>
     </span>
     <br><br><br>
-    <a href="{{ url_for('main.index') }}" class="btn btn-mini btn-primary" onclick="socket.emit('left', {});">Leave this room</a>
+    <span>
+        <a href="{{ url_for('main.index') }}" class="btn btn-mini btn-primary" onclick="socket.emit('left', {});">Leave this room</a>
+        <a class="btn btn-mini btn-primary" id="history_btn" style="margin-left: 2em;">History search</a>
+        <a class="btn btn-mini btn-primary" id="clear_btn" style="margin-left: 2em;">Clear</a>
+    </span>
+    <br><br>
+    <ul id="results">
+    </ul>
 {% endblock %}

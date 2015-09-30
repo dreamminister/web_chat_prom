@@ -2,6 +2,7 @@ from flask.ext.login import UserMixin
 from app import db, login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+import json
 
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
@@ -46,6 +47,7 @@ class Room(db.Model):
 
 class Message(db.Model):
     __tablename_ = 'messages'
+    __searchable__ = ['text', 'user']
     id = db.Column(db.Integer, primary_key = True)
     created = db.Column(db.DateTime, default=datetime.utcnow())
     text = db.Column(db.Text, index=True)
