@@ -9,6 +9,7 @@ class Config:
     'sqlite:///' + os.path.join(basedir, DATABASE_NAME)
     SEARCHBASE_NAME = 'dev-search'
     WHOOSH_BASE = os.path.join(basedir, SEARCHBASE_NAME)
+    CORS_HEADERS = 'Content-Type'
 
     @staticmethod
     def init_app(app):

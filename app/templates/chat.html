@@ -11,7 +11,9 @@
         <script type="text/javascript" charset="utf-8">
             var socket;
             $(document).ready(function(){
-                socket = io.connect('https://' + document.domain + ':' + location.port + '/chat', {secure: true});
+                var options = {};
+                options.transports = ['websocket'];
+                socket = io.connect('https://' + document.domain + ':' + location.port + '/chat/?token=ABCDEF', options);
 
                 var chat_tag = $('#chat');
                 var text_tag = $('#text');

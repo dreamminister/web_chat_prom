@@ -5,12 +5,14 @@ from config import config, basedir
 from flask.ext.login import LoginManager
 from flask.ext.socketio import SocketIO
 import os
+from flask.ext.cors import CORS
 
 bootstrap = Bootstrap()
 db = SQLAlchemy()
 socketio = SocketIO()
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
+cors = CORS()
 
 def create_app(config_name):
     app = Flask(__name__)
@@ -18,6 +20,7 @@ def create_app(config_name):
     bootstrap.init_app(app)
     db.init_app(app)
     login_manager.init_app(app)
+    cors.init_app(app)
 
     from main import main as main_blueprint
     app.register_blueprint(main_blueprint)

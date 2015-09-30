@@ -5,6 +5,7 @@ from ..models import Room, Message
 from .forms import AddRoomForm
 from app import db
 import string
+from flask.ext.cors import CORS, cross_origin
 
 @main.route('/')
 def index():
@@ -38,6 +39,7 @@ def chat():
     return render_template('chat.html', name=name, room='Main')
 
 @main.route('/chat/<room>')
+@cross_origin()
 def custom_chat(room):
     name = session.get('name', '')
     if not name:
