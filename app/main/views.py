@@ -5,7 +5,7 @@ from ..models import Room, Message
 from .forms import AddRoomForm
 from app import db
 import string
-from flask.ext.cors import CORS, cross_origin
+from flask.ext.cors import cross_origin
 
 @main.route('/')
 def index():
