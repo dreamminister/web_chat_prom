@@ -12,8 +12,9 @@
             var socket;
             $(document).ready(function(){
                 var options = {};
-                options.transports = ['websocket'];
-                socket = io.connect('https://' + document.domain + ':' + location.port + '/chat/?token=ABCDEF', options);
+                options.transports = ['websocket', 'flashsocket', 'htmlfile', 'xhr-polling', 'jsonp-polling'];
+                options.secure = true;
+                socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + '/chat', options);
 
                 var chat_tag = $('#chat');
                 var text_tag = $('#text');
