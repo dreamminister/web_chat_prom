@@ -1,1 +1,1 @@
-web: gunicorn --worker-class socketio.sgunicorn.GeventSocketIOWorker web_chat:app
+gunicorn --worker-class socketio.sgunicorn.GeventSocketIOWorker web_chat:app
