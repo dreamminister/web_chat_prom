@@ -43,6 +43,8 @@ def chat():
 @main.route('/chat/<room>')
 @cross_origin()
 def custom_chat(room):
+    if not current_user.is_authenticated():
+        return redirect(url_for('.index'))
     name = session.get('name', '')
     if not name:
         name = current_user.username
