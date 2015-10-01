@@ -27,6 +27,8 @@ def rooms():
 
 @main.route('/chat')
 def chat():
+    if not current_user.is_authenticated():
+        return redirect(url_for('.index'))
     name = session.get('name', '')
     session['room'] = 'Main'
 
