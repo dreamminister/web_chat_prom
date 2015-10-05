@@ -15,7 +15,7 @@
                 options.secure = true;
                 options.port = location.port;
                 options.origins = '/*';
-                socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port, options);//window.location.origin, options);
+                socket = io.connect(window.location.origin, options);
 
                 socket.on('connect', function() {
                     socket.emit('joined', {});
