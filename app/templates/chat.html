@@ -14,29 +14,9 @@
                 var options = {};
                 options.secure = true;
                 options.port = location.port;
-                options.origins = '/*';
+                options.transports = ['websocket', 'flashsocket', 'htmlfile'];
                 socket = io.connect(window.location.origin, options);
-
-                socket.on('connect', function() {
-                    socket.emit('joined', {});
-                });
-
-                socket.on('status', function(data) {
-                    chat_tag.append(advancedFormatMsg(data.msg));
-                    chat_tag.scrollTop(chat_tag[0].scrollHeight);
-                });
-                socket.on('message', function(data) {
-                    if (data.name === 'News')
-                    {
-                        chat_tag.append(formatMsg(data.msg));
-                    }
-                    else
-                    {
-                        chat_tag.append(advancedFormatMsg(data.msg));
-                    }
-                    chat_tag.scrollTop(chat_tag[0].scrollHeight);
-                });
-
+                
                 var chat_tag = $('#chat');
                 var text_tag = $('#text');
                 var history_tag = $('#history_btn');
@@ -81,6 +61,26 @@
                         });
                     });
                 }
+
+                socket.on('connect', function() {
+                    socket.emit('joined', {});
+                });
+
+                socket.on('status', function(data) {
+                    chat_tag.append(advancedFormatMsg(data.msg));
+                    chat_tag.scrollTop(chat_tag[0].scrollHeight);
+                });
+                socket.on('message', function(data) {
+                    if (data.name === 'News')
+                    {
+                        chat_tag.append(formatMsg(data.msg));
+                    }
+                    else
+                    {
+                        chat_tag.append(advancedFormatMsg(data.msg));
+                    }
+                    chat_tag.scrollTop(chat_tag[0].scrollHeight);
+                });
 
                 setTimeout(postNews, 5000);
 
