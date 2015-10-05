@@ -34,7 +34,7 @@ def send_news(message):
     msg = message['msg']
     emit('message', {'msg': msg, 'name': user_name}, room=room)
 
-
+@socketio.on('disconnect')
 @socketio.on('left')
 def left(message):
     """Sent by clients when they leave a room.
