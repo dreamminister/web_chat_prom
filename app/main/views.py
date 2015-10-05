@@ -1,4 +1,4 @@
-from flask import session, redirect, url_for, render_template, request, jsonify, Response
+from flask import session, redirect, url_for, render_template, request, jsonify, current_app
 from flask.ext.login import current_user, login_required
 from . import main
 from ..models import Room, Message
@@ -6,6 +6,7 @@ from .forms import AddRoomForm
 from app import db
 import string
 from flask.ext.cors import cross_origin
+from functools import wraps
 
 @main.route('/')
 def index():
@@ -41,25 +42,6 @@ def chat():
         return redirect(url_for('.index'))
     return render_template('chat.html', name=name, room='Main')
 
-@main.route('/chat/<room>', methods=['GET', 'POST'])
-@login_required
-@cross_origin()
-def custom_chat(room):
-    if not current_user.is_authenticated():
-        return redirect(url_for('.index'))
-    name = session.get('name', '')
-    if not name:
-        name = current_user.username
-        session['name'] = name
-
-    room = room
-    session['room'] = room
-    if name == '' or room == '':
-        return redirect(url_for('.index'))
-
-    history = Message.query.filter_by(room=room).limit(20).all()
-
-    return render_template('chat.html', name=name, room=room, history=history)
 
 @main.route('/chat/add', methods=['GET', 'POST'])
 @login_required
@@ -133,3 +115,39 @@ def history_search():
         return jsonify(error="No results...")
 
     return jsonify(result=data[:20])
+
+def ssl_required(fn):
+    @wraps(fn)
+    def decorated_view(*args, **kwargs):
+        if current_app.config.get("SSL"):
+            if request.is_secure:
+                return fn(*args, **kwargs)
+            else:
+                url = request.url.replace("http://", "https://")
+                url = request.url.replace("ws://", "wss://")
+                return redirect(url)
+
+        return fn(*args, **kwargs)
+
+    return decorated_view
+
+@main.route('/chat/<room>', methods=['GET', 'POST'])
+@login_required
+@cross_origin()
+@ssl_required
+def custom_chat(room):
+    if not current_user.is_authenticated():
+        return redirect(url_for('.index'))
+    name = session.get('name', '')
+    if not name:
+        name = current_user.username
+        session['name'] = name
+
+    room = room
+    session['room'] = room
+    if name == '' or room == '':
+        return redirect(url_for('.index'))
+
+    history = Message.query.filter_by(room=room).limit(20).all()
+
+    return render_template('chat.html', name=name, room=room, history=history)
