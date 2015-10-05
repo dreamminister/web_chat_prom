@@ -12,11 +12,11 @@
             var socket;
             $(document).ready(function(){
                 var options = {};
-                //options.transports = ['websocket', 'flashsocket', 'htmlfile', 'xhr-polling', 'jsonp-polling', 'polling'];
                 options.secure = true;
                 options.port = location.port;
-                alert(location.port);
-                socket = io.connect(window.location.origin, options);
+                options.origins = '/*';
+                socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port, options);//window.location.origin, options);
+
                 socket.on('connect', function() {
                     socket.emit('joined', {});
                 });
