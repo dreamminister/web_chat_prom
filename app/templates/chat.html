@@ -16,7 +16,7 @@
                 options.port = location.port;
                 options.origins = ["*","https://hidden-bayou-4404.herokuapp.com:*",
                     "ws://hidden-bayou-4404.herokuapp.com:*"];
-                options.transports = ['websocket', 'flashsocket', 'htmlfile', 'xhr-polling', 'jsonp-polling'];
+                options.transports = ['flashsocket', 'htmlfile', 'jsonp-polling'];
                 socket = io.connect(window.location.origin, options);
 
                 var chat_tag = $('#chat');
