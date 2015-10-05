@@ -12,13 +12,19 @@
             var socket;
             $(document).ready(function(){
                 var options = {};
-                //options.transports = ['websocket', 'flashsocket', 'htmlfile'];
+                io.set("reconnection limit", 5000);
                 options.secure = true;
                 options.port = location.port;
                 socket = io.connect(window.location.origin, options);
                 socket.on('connect', function() {
                     socket.emit('joined', {});
                 });
+                socket.on('disconnect', function() {
+                    socketConnectTimeInterval = setInterval(function () {
+                      socket.socket.reconnect();
+                      if(socket.socket.connected) {clearInterval(socketConnectTimeInterval);}
+                    }, 3000);
+                 });
                 socket.on('status', function(data) {
                     chat_tag.append(advancedFormatMsg(data.msg));
                     chat_tag.scrollTop(chat_tag[0].scrollHeight);
