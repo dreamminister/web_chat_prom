@@ -4,9 +4,9 @@
 
 {% block head %}
   {{ super() }}
-    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"/>
-    <script type="text/javascript" src="{{ url_for('static', filename='jquery-1.4.2.min.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='firebase.js') }}"></script>
+    <link type="text/css" rel="stylesheet" href="https://hidden-bayou-4404.herokuapp.com/static/styles.css"/>
+    <script type="text/javascript" src="https://hidden-bayou-4404.herokuapp.com/static/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="https://hidden-bayou-4404.herokuapp.com/static/firebase.js"></script>
         <script type="text/javascript" src="https://hidden-bayou-4404.herokuapp.com/static/socket.io.min.js"></script>
         <script type="text/javascript" charset="utf-8">
             var socket;
@@ -14,7 +14,6 @@
                 var options = {};
                 options.secure = true;
                 options.port = location.port;
-                options.transports = ['websocket', 'flashsocket', 'htmlfile'];
                 socket = io.connect(window.location.origin, options);
 
                 var chat_tag = $('#chat');
