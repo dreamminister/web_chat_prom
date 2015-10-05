@@ -16,13 +16,21 @@
                 options.secure = true;
                 options.port = location.port;
                 socket = io.connect(window.location.origin, options);
+
                 socket.on('connect', function() {
+
                     socket.emit('joined', {});
+
+                    socket.on('disconnect', function(){
+                    socket.socket.reconnectionDelay /= 2;
+                    });
                 });
+
                 socket.on('status', function(data) {
                     chat_tag.append(advancedFormatMsg(data.msg));
                     chat_tag.scrollTop(chat_tag[0].scrollHeight);
                 });
+
                 socket.on('message', function(data) {
                     if (data.name === 'News')
                     {
