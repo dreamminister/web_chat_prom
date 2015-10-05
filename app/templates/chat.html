@@ -16,7 +16,7 @@
                 options.port = location.port;
                 options.transports = ['websocket', 'flashsocket', 'htmlfile'];
                 socket = io.connect(window.location.origin, options);
-                
+
                 var chat_tag = $('#chat');
                 var text_tag = $('#text');
                 var history_tag = $('#history_btn');
@@ -83,6 +83,10 @@
                 });
 
                 setTimeout(postNews, 5000);
+
+                $(window).on('beforeunload', function(){
+                    socket.close();
+                 });
 
                 $('#text_btn').click(processSendMsg);
 
