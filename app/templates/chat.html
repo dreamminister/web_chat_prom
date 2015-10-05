@@ -90,7 +90,9 @@
 
                 setTimeout(postNews, 5000);
 
-
+                $(window).on('beforeunload', function(){
+                    socket.close();
+                 });
 
                 $('#text_btn').click(processSendMsg);
 

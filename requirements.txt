@@ -16,6 +16,7 @@ Whoosh==2.7.0
 WhooshAlchemy==0.1.4
 blinker==1.4
 dominate==2.1.12
+eventlet==0.17.4
 gevent==1.0.2
 gevent-socketio==0.3.6
 gevent-websocket==0.9.5

@@ -124,7 +124,7 @@ def ssl_required(fn):
                 return fn(*args, **kwargs)
             else:
                 url = request.url.replace("http://", "https://")
-                url = request.url.replace("ws://", "wss://")
+                url = url.url.replace("ws://", "wss://")
                 return redirect(url)
 
         return fn(*args, **kwargs)
@@ -151,3 +151,12 @@ def custom_chat(room):
     history = Message.query.filter_by(room=room).limit(20).all()
 
     return render_template('chat.html', name=name, room=room, history=history)
+
+@main.before_request
+def beforeRequest():
+    requestUrl = request.url
+    https = 'https' in requestUrl
+    if https == False:
+        secureUrl = requestUrl.replace('http://','https://')
+        secureUrl = secureUrl.replace('ws://','wss://')
+        return redirect(secureUrl)
