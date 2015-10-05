@@ -12,7 +12,7 @@ db = SQLAlchemy()
 socketio = SocketIO()
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
-cors = CORS()
+cors = CORS(resources={"/*" : {"origins": "*"}})
 
 def create_app(config_name):
     app = Flask(__name__)
