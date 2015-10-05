@@ -6,6 +6,7 @@ from flask.ext.login import LoginManager
 from flask.ext.socketio import SocketIO
 import os
 from flask.ext.cors import CORS
+from flask_sslify import SSLify
 
 bootstrap = Bootstrap()
 db = SQLAlchemy()
@@ -13,6 +14,8 @@ socketio = SocketIO()
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
 cors = CORS(resources={"/*" : {"origins": "*"}})
+sslify = SSLify()
+
 
 def create_app(config_name):
     app = Flask(__name__)
@@ -21,7 +24,8 @@ def create_app(config_name):
     db.init_app(app)
     login_manager.init_app(app)
     cors.init_app(app)
-
+    if 'DYNO' in os.environ: # only trigger SSLify if the app is running on Heroku
+        sslify.init_app(app)
     from main import main as main_blueprint
     app.register_blueprint(main_blueprint)
 
