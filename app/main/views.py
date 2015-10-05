@@ -1,5 +1,5 @@
 from flask import session, redirect, url_for, render_template, request, jsonify, Response
-from flask.ext.login import current_user
+from flask.ext.login import current_user, login_required
 from . import main
 from ..models import Room, Message
 from .forms import AddRoomForm
@@ -12,6 +12,7 @@ def index():
     return render_template('index.html')
 
 @main.route('/rooms')
+@login_required
 def rooms():
     rooms = []
     if current_user.is_authenticated():
@@ -40,7 +41,8 @@ def chat():
         return redirect(url_for('.index'))
     return render_template('chat.html', name=name, room='Main')
 
-@main.route('/chat/<room>')
+@main.route('/chat/<room>', methods=['GET', 'POST'])
+@login_required
 @cross_origin()
 def custom_chat(room):
     if not current_user.is_authenticated():
@@ -60,6 +62,7 @@ def custom_chat(room):
     return render_template('chat.html', name=name, room=room, history=history)
 
 @main.route('/chat/add', methods=['GET', 'POST'])
+@login_required
 def add_room():
     error = ''
     if current_user.is_authenticated():
@@ -76,6 +79,7 @@ def add_room():
 
 
 @main.route('/room/search', methods=['POST'])
+@login_required
 def room_search():
     error = ''
     if not request.form.get('search_query'):
@@ -103,6 +107,7 @@ def room_search():
     return render_template('room_search.html', error=error)
 
 @main.route('/_history_search')
+@login_required
 def history_search():
     query = request.args.get('query')
     if not query:
