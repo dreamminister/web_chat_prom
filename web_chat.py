@@ -8,4 +8,4 @@ whoosh_index(app, Room)
 whoosh_index(app, Message)
 
 if __name__ == '__main__':
-    socketio.run(app, host='192.168.1.4') #host='192.168.1.3'
+    socketio.run(app) #host='192.168.1.3'
