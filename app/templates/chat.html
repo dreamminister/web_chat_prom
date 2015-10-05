@@ -68,6 +68,10 @@
                     socket.emit('joined', {});
                 });
 
+                socket.on('disconnect', function() {
+                    socket.emit('disconnected', {});
+                });
+
                 socket.on('status', function(data) {
                     chat_tag.append(advancedFormatMsg(data.msg));
                     chat_tag.scrollTop(chat_tag[0].scrollHeight);
