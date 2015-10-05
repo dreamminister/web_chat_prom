@@ -7,13 +7,13 @@
     <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"/>
     <script type="text/javascript" src="{{ url_for('static', filename='jquery-1.4.2.min.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='firebase.js') }}"></script>
-        <script type="text/javascript" src="https://hidden-bayou-4404.herokuapp.com/static/socket.io.min.js"></script>
+        <script type="text/javascript" src="http://hidden-bayou-4404.herokuapp.com/static/socket.io.min.js"></script>
         <script type="text/javascript" charset="utf-8">
             var socket;
             $(document).ready(function(){
                 var options = {};
                 options.transports = ['websocket', 'flashsocket', 'htmlfile', 'xhr-polling', 'jsonp-polling'];
-                options.secure = true;
+                //options.secure = true;
                 options.port = location.port;
                 options.origins = ['https://hidden-bayou-4404.herokuapp.com:*'];
                 //socket = io.connect(window.location.origin + '/chat', options);
