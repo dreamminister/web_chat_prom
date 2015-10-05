@@ -14,7 +14,8 @@
                 var options = {};
                 //options.transports = ['websocket', 'flashsocket', 'htmlfile', 'xhr-polling', 'jsonp-polling', 'polling'];
                 options.secure = true;
-                //options.port = location.port;
+                options.port = location.port;
+                alert(location.port);
                 socket = io.connect(window.location.origin, options);
                 socket.on('connect', function() {
                     socket.emit('joined', {});
