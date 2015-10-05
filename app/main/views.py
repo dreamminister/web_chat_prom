@@ -116,9 +116,25 @@ def history_search():
 
     return jsonify(result=data[:20])
 
+def ssl_required(fn):
+    @wraps(fn)
+    def decorated_view(*args, **kwargs):
+        if current_app.config.get("SSL"):
+            if request.is_secure:
+                return fn(*args, **kwargs)
+            else:
+                url = request.url.replace("http://", "https://")
+                url = url.url.replace("ws://", "wss://")
+                return redirect(url)
+
+        return fn(*args, **kwargs)
+
+    return decorated_view
+
 @main.route('/chat/<room>', methods=['GET', 'POST'])
 @login_required
 @cross_origin()
+@ssl_required
 def custom_chat(room):
     if not current_user.is_authenticated():
         return redirect(url_for('.index'))
